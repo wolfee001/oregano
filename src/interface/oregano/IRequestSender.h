@@ -2,6 +2,8 @@
 
 #include "IResponsePromise.h"
 
+#include <memory>
+
 namespace oregano {
 
 class IRequestSender {
