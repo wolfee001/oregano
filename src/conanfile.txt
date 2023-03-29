@@ -1,0 +1,10 @@
+[requires]
+redis-plus-plus/1.3.7
+sole/1.0.4
+nlohmann_json/3.11.2
+cppcodec/0.2
+
+[options]
+
+[generators]
+cmake
