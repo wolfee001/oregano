@@ -21,12 +21,10 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cd graphiland
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DBUILD_TEST
 
       - name: Build
         run: |
-          cd graphiland
           cmake --build ${{github.workspace}}/build
 
       - name: Test
