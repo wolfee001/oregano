@@ -3,7 +3,6 @@ setup_conan(FILE conanfile.txt)
 add_library(oregano
     implementation/BrokerConfiguration.cpp
     implementation/EventInterface.cpp
-    implementation/Message.cpp
     implementation/MessageBrokerFactory.cpp
     implementation/MessageBrokerWrapper.cpp
     implementation/MessageHandlerManager.cpp

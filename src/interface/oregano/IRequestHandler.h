@@ -2,6 +2,7 @@
 
 #include "IMessageHandler.h"
 
+#include <functional>
 #include <string>
 
 namespace oregano {

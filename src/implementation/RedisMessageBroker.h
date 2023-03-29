@@ -2,6 +2,7 @@
 
 #include "IMessageBroker.h"
 
+#include <atomic>
 #include <list>
 #include <memory>
 #include <mutex>
