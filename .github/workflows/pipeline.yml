@@ -48,7 +48,7 @@ jobs:
       - name: Install lcov
         run: |
           sudo apt-get update
-          sudo apt get install lcov
+          sudo apt-get install lcov
 
       - name: Configure CMake
         run: |
