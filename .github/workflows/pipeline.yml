@@ -31,4 +31,4 @@ jobs:
 
       - name: Test
         run: |
-          ctest --output-on-failure --stop-on-failure --test-dir ${{github.workspace}}/build
+          ctest --output-on-failure --stop-on-failure --test-dir ${{github.workspace}}/build -C ${{ matrix.build-type }}
