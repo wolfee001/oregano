@@ -16,6 +16,8 @@ include(cmake/Conan.cmake)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+add_compile_definitions(NOMINMAX)
+
 # --------------
 if(BUILD_COVERAGE)
     if(NOT BUILD_TEST)
