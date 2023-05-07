@@ -43,7 +43,7 @@ jobs:
       - name: Test
         if: matrix.os == 'ubuntu-latest'
         run: |
-          docker run -d redis
+          docker run -p 6379:6379 -d redis
           ctest --output-on-failure --stop-on-failure --test-dir ${{github.workspace}}/build -C ${{ matrix.build-type }}
 
   # coverage:
