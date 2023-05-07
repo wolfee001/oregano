@@ -32,13 +32,10 @@ int main()
     std::string channel = "example_transaction_channel";
 
     while (true) {
-        uint32_t a = dist(rng);
-        uint32_t b = dist(rng);
-
         nlohmann::json json;
         json["id"] = id;
-        json["payload"]["a"] = a;
-        json["payload"]["b"] = b;
+        json["payload"]["a"] = dist(rng);
+        json["payload"]["b"] = dist(rng);
 
         std::cout << "Sending request on channel " << channel << std::endl;
         std::cout << json.dump(2) << std::endl;
