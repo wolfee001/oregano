@@ -6,6 +6,8 @@ namespace oregano::broker_configuration {
 
 class RedisImpl : public Redis {
 public:
+    RedisImpl();
+
     void set_host(const std::string& p_host) override;
     const std::string& get_host() const override;
 

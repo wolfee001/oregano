@@ -71,15 +71,17 @@ std::unique_ptr<IRequestSender> TransactionInterface::create_request_sender()
 
 std::unique_ptr<IRequestHandler> TransactionInterface::create_request_handler()
 {
-    return std::make_unique<RequestHander>(*m_message_handler_manager, *m_publisher);
+    return std::make_unique<RequestHandler>(*m_message_handler_manager, *m_publisher);
 }
 
 std::unique_ptr<ITransactionInterface> ITransactionInterface::create(IMessageBrokerWrapper& p_message_broker)
 {
-    return std::make_unique<TransactionInterface>(p_message_broker,
+    auto ret_val = std::make_unique<TransactionInterface>(p_message_broker,
         std::make_unique<MessageHandlerManager>(MessageHandlerManager::Type::Transaction, p_message_broker),
         std::make_unique<EventInterface>(
             p_message_broker, std::make_unique<MessageHandlerManager>(MessageHandlerManager::Type::Event, p_message_broker)));
+
+    return ret_val;
 }
 
 } // namespace oregano
