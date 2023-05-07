@@ -60,3 +60,9 @@ if(BUILD_ITEST)
     enable_testing()
     add_subdirectory(test/integration)
 endif()
+
+if(BUILD_EXAMPLES)
+    message(STATUS "Building examples")
+
+    add_subdirectory(examples)
+endif()
