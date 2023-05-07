@@ -24,12 +24,12 @@ jobs:
       - name: Configure CMake
         if: matrix.os != 'ubuntu-latest'
         run: |
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DBUILD_TEST=1
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DBUILD_TEST=1 -BUILD_EXAMPLES=1
 
       - name: Configure CMake
         if: matrix.os == 'ubuntu-latest'
         run: |
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DBUILD_TEST=1 -DBUILD_ITEST=1
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DBUILD_TEST=1 -DBUILD_ITEST=1 -BUILD_EXAMPLES=1
 
       - name: Build
         run: |
