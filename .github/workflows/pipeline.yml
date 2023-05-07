@@ -32,6 +32,7 @@ jobs:
 
       - name: Test
         run: |
+          docker run -d redis
           ctest --output-on-failure --stop-on-failure --test-dir ${{github.workspace}}/build -C ${{ matrix.build-type }}
 
   # coverage:
