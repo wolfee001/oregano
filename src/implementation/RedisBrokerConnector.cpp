@@ -44,34 +44,45 @@ RedisBrokerConnector::RedisBrokerConnector(const std::string& p_host, uint16_t p
             m_on_subscribe_callback(p_channel, p_message);
         });
 
-    m_subscriber_worker = std::thread([&m_redis_subscriber = this->m_redis_subscriber, &m_is_running = this->m_is_running]() {
+    m_subscriber_worker = std::thread([&m_redis_subscriber = this->m_redis_subscriber, &m_is_running = this->m_is_running,
+                                          &m_subscriber_thread_alive = this->m_subscriber_thread_alive]() {
         while (m_is_running) {
             m_redis_subscriber->consume();
+            m_subscriber_thread_alive = true;
         }
     });
 
-    m_queue_worker = std::thread(
-        [&m_redis_queue = this->m_redis_queue, &m_is_running = this->m_is_running,
-            &m_queue_subscription_lock = this->m_queue_subscription_lock,
-            &m_queue_subscriptions_changed = this->m_queue_subscriptions_changed, &m_queue_subscriptions = this->m_queue_subscriptions,
-            &m_on_queue_callback = this->m_on_queue_callback, &m_technical_channel = this->m_technical_channel]() {
-            std::list<std::string> queues;
-            while (m_is_running) {
-                {
-                    std::lock_guard<std::mutex> guard { m_queue_subscription_lock };
-                    if (m_queue_subscriptions_changed) {
-                        queues = m_queue_subscriptions;
-                        m_queue_subscriptions_changed = false;
-                    }
-                }
-                const auto message = m_redis_queue->brpop(queues.begin(), queues.end());
-                if (message->first == m_technical_channel) {
-                    continue;
-                }
+    m_queue_worker
+        = std::thread([&m_redis_queue = this->m_redis_queue, &m_is_running = this->m_is_running,
+                          &m_queue_subscription_lock = this->m_queue_subscription_lock,
+                          &m_queue_subscriptions_changed = this->m_queue_subscriptions_changed,
+                          &m_queue_subscriptions = this->m_queue_subscriptions, &m_on_queue_callback = this->m_on_queue_callback,
+                          &m_technical_channel = this->m_technical_channel, &m_queue_thread_alive = this->m_queue_thread_alive]() {
+              std::list<std::string> queues;
+              while (m_is_running) {
+                  {
+                      std::lock_guard<std::mutex> guard { m_queue_subscription_lock };
+                      if (m_queue_subscriptions_changed) {
+                          queues = m_queue_subscriptions;
+                          m_queue_subscriptions_changed = false;
+                      }
+                  }
+                  const auto message = m_redis_queue->brpop(queues.begin(), queues.end());
+                  m_queue_thread_alive = true;
+                  if (message->first == m_technical_channel) {
+                      continue;
+                  }
 
-                m_on_queue_callback(message->first, message->second);
-            }
-        });
+                  m_on_queue_callback(message->first, message->second);
+              }
+          });
+
+    while (!m_subscriber_thread_alive) {
+        notify_event_subscription_change();
+    }
+    while (!m_queue_thread_alive) {
+        notify_queue_subscription_change();
+    }
 }
 
 RedisBrokerConnector::~RedisBrokerConnector()
