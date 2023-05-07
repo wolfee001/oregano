@@ -15,6 +15,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <mutex>
+
 using namespace std::string_literals;
 using namespace std::chrono_literals;
 
@@ -86,12 +88,18 @@ TEST_F(ResponsePromiseTest, GIVEN_ResponsePromise_WHEN_Response_THEN_ReturnRespo
 
 TEST_F(ResponsePromiseTest, GIVEN_ResponsePromise_WHEN_Response_THEN_ReturnResponseWithThread)
 {
+    std::timed_mutex mtx;
+    mtx.lock();
     auto start = std::chrono::system_clock::now();
     auto promise = oregano::ResponsePromise([]() {}, std::chrono::system_clock::now() + 10s);
-    promise.then([&start](oregano::IResponsePromise::response_t p_response) {
+    promise.then([&start, &mtx](oregano::IResponsePromise::response_t p_response) {
         EXPECT_EQ(p_response.resolution, oregano::IResponsePromise::Resolution::Answer);
         EXPECT_EQ(p_response.message, "SomeResponse"s);
         EXPECT_LT(std::chrono::system_clock::now() - start, 50ms);
+        mtx.unlock();
     });
     promise.on_response("SomeResponse");
+    if (!mtx.try_lock_for(10s)) {
+        FAIL();
+    }
 }
