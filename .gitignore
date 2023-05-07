@@ -3,6 +3,7 @@
 .vscode
 build
 coverage
+target
 
 .DS_Store
 compile_commands.json
