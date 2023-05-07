@@ -7,9 +7,9 @@
 
 namespace oregano {
 
-class RequestHander : public IRequestHandler {
+class RequestHandler : public IRequestHandler {
 public:
-    explicit RequestHander(IMessageHandlerManager& p_message_handler_manager, IPublisher& p_publisher);
+    explicit RequestHandler(IMessageHandlerManager& p_message_handler_manager, IPublisher& p_publisher);
 
     void listen(const std::string& p_channel) override;
     void stop_listening(const std::string& p_channel) override;

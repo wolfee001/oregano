@@ -2,6 +2,11 @@
 
 namespace oregano::broker_configuration {
 
+RedisImpl::RedisImpl()
+    : m_port(0)
+{
+}
+
 void RedisImpl::set_host(const std::string& p_host) { m_host = p_host; }
 
 const std::string& RedisImpl::get_host() const { return m_host; }

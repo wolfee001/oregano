@@ -27,8 +27,9 @@ std::unique_ptr<ISubscriber> EventInterface::create_subscriber() { return std::m
 
 std::unique_ptr<IEventInterface> IEventInterface::create(IMessageBrokerWrapper& p_message_broker)
 {
-    return std::make_unique<EventInterface>(
+    auto ret_val = std::make_unique<EventInterface>(
         p_message_broker, std::make_unique<MessageHandlerManager>(MessageHandlerManager::Type::Event, p_message_broker));
+    return ret_val;
 }
 
 } // namespace oregano

@@ -11,7 +11,9 @@ IMessageBroker& MessageBrokerWrapper::get_message_broker() { return *m_message_b
 
 std::unique_ptr<IMessageBrokerWrapper> IMessageBrokerWrapper::create(broker_configuration::Configuration p_configuration)
 {
-    return std::make_unique<MessageBrokerWrapper>(IMessageBroker::create(p_configuration));
+    auto broker = IMessageBroker::create(p_configuration);
+    broker->init();
+    return std::make_unique<MessageBrokerWrapper>(std::move(broker));
 }
 
 } // namespace oregano

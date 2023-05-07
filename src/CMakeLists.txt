@@ -15,6 +15,16 @@ add_library(oregano
     implementation/TransactionInterface.cpp
 )
 
+file(GLOB_RECURSE gcda_files ${CMAKE_BINARY_DIR}/*.gcda)
+
+foreach(_file ${gcda_files})
+    add_custom_command(TARGET oregano
+        PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${_file}
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+endforeach()
+
 target_link_libraries(oregano
     PRIVATE project_options
     PRIVATE project_warnings

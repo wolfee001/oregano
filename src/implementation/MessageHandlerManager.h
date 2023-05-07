@@ -13,8 +13,10 @@ namespace oregano {
 
 class MessageHandlerManager : public IMessageHandlerManager {
 public:
-    enum class Type { Event,
-        Transaction };
+    enum class Type {
+        Event,
+        Transaction,
+    };
 
 public:
     MessageHandlerManager(Type p_subscription_type, IMessageBrokerWrapper& p_message_broker_wrapper);

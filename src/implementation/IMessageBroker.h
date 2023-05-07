@@ -14,6 +14,8 @@ public:
 public:
     virtual ~IMessageBroker() = default;
 
+    virtual void init() = 0;
+
     virtual void publish(const std::string& p_channel, const std::string& p_message) = 0;
     virtual void subscribe(const std::string& p_channel) = 0;
     virtual void unsubscribe(const std::string& p_channel) = 0;
