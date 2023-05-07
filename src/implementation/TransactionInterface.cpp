@@ -21,16 +21,16 @@
 
 namespace oregano {
 
-TransactionInterface::TransactionInterface(IMessageBrokerWrapper& p_message_broker,
+TransactionInterface::TransactionInterface(IMessageBrokerWrapper& p_message_broker_wrapper,
     std::unique_ptr<IMessageHandlerManager> p_message_handler_manager, std::unique_ptr<IEventInterface> p_event_interface)
-    : m_message_broker(p_message_broker)
+    : m_message_broker_wrapper(p_message_broker_wrapper)
     , m_message_handler_manager(std::move(p_message_handler_manager))
     , m_event_interface(std::move(p_event_interface))
     , m_response_channel(sole::uuid4().base62())
     , m_publisher(m_event_interface->create_publisher())
     , m_subscriber(m_event_interface->create_subscriber())
 {
-    m_callback_register_id = m_message_broker.get_message_broker().register_transaction_callback(
+    m_callback_register_id = m_message_broker_wrapper.get_message_broker().register_transaction_callback(
         [&m_message_handler_manager = this->m_message_handler_manager](
             const std::string& p_channel, const std::string& p_message) { m_message_handler_manager->on_message(p_channel, p_message); });
 
@@ -51,12 +51,15 @@ TransactionInterface::TransactionInterface(IMessageBrokerWrapper& p_message_brok
     m_subscriber->subscribe(m_response_channel);
 }
 
-TransactionInterface::~TransactionInterface() { m_message_broker.get_message_broker().remove_transaction_callback(m_callback_register_id); }
+TransactionInterface::~TransactionInterface()
+{
+    m_message_broker_wrapper.get_message_broker().remove_transaction_callback(m_callback_register_id);
+}
 
 std::unique_ptr<IRequestSender> TransactionInterface::create_request_sender()
 {
     return std::make_unique<RequestSender>(
-        m_message_broker.get_message_broker(), m_response_channel,
+        m_message_broker_wrapper.get_message_broker(), m_response_channel,
         [&m_on_response_callbacks_lock = this->m_on_response_callbacks_lock, &m_on_response_callbacks = this->m_on_response_callbacks](
             const std::string& p_message_id, IResponsePromise* p_promise) {
             std::lock_guard<std::mutex> guard { m_on_response_callbacks_lock };
@@ -74,12 +77,12 @@ std::unique_ptr<IRequestHandler> TransactionInterface::create_request_handler()
     return std::make_unique<RequestHandler>(*m_message_handler_manager, *m_publisher);
 }
 
-std::unique_ptr<ITransactionInterface> ITransactionInterface::create(IMessageBrokerWrapper& p_message_broker)
+std::unique_ptr<ITransactionInterface> ITransactionInterface::create(IMessageBrokerWrapper& p_message_broker_wrapper)
 {
-    auto ret_val = std::make_unique<TransactionInterface>(p_message_broker,
-        std::make_unique<MessageHandlerManager>(MessageHandlerManager::Type::Transaction, p_message_broker),
-        std::make_unique<EventInterface>(
-            p_message_broker, std::make_unique<MessageHandlerManager>(MessageHandlerManager::Type::Event, p_message_broker)));
+    auto ret_val = std::make_unique<TransactionInterface>(p_message_broker_wrapper,
+        std::make_unique<MessageHandlerManager>(MessageHandlerManager::Type::Transaction, p_message_broker_wrapper),
+        std::make_unique<EventInterface>(p_message_broker_wrapper,
+            std::make_unique<MessageHandlerManager>(MessageHandlerManager::Type::Event, p_message_broker_wrapper)));
 
     return ret_val;
 }
