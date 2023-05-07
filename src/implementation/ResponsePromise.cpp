@@ -30,6 +30,7 @@ IResponsePromise::response_t ResponsePromise::await()
         m_result_read = true;
         return { IResponsePromise::Resolution::Answer, m_response };
     }
+    m_result_read = true;
     return { IResponsePromise::Resolution::Timeout, std::nullopt };
 }
 
