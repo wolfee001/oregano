@@ -59,6 +59,8 @@ private:
     std::atomic_bool m_queue_subscriptions_changed;
     std::atomic_bool m_subscriber_thread_alive { false };
     std::atomic_bool m_queue_thread_alive { false };
+    std::mutex m_subscription_lock;
+    std::atomic_bool m_subscription_status_changed { false };
 };
 
 } // namespace oregano

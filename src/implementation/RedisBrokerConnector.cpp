@@ -44,6 +44,16 @@ RedisBrokerConnector::RedisBrokerConnector(const std::string& p_host, uint16_t p
             m_on_subscribe_callback(p_channel, p_message);
         });
 
+    m_redis_subscriber->on_meta([&m_subscription_status_changed = this->m_subscription_status_changed](
+                                    sw::redis::Subscriber::MsgType p_type, sw::redis::OptionalString, long long) {
+        if (p_type == sw::redis::Subscriber::MsgType::SUBSCRIBE || p_type == sw::redis::Subscriber::MsgType::UNSUBSCRIBE) {
+            if (m_subscription_status_changed) {
+                throw std::runtime_error("subscriptions / unsunscriptions must be mutexed!");
+            }
+            m_subscription_status_changed = true;
+        }
+    });
+
     m_subscriber_worker = std::thread([&m_redis_subscriber = this->m_redis_subscriber, &m_is_running = this->m_is_running,
                                           &m_subscriber_thread_alive = this->m_subscriber_thread_alive]() {
         while (m_is_running) {
@@ -83,6 +93,8 @@ RedisBrokerConnector::RedisBrokerConnector(const std::string& p_host, uint16_t p
     while (!m_queue_thread_alive) {
         notify_queue_subscription_change();
     }
+
+    m_subscription_status_changed = false;
 }
 
 RedisBrokerConnector::~RedisBrokerConnector()
@@ -121,14 +133,30 @@ void RedisBrokerConnector::publish(const std::string& p_channel, const std::stri
 
 void RedisBrokerConnector::subscribe(const std::string& p_channel)
 {
+    std::lock_guard<std::mutex> guard { m_subscription_lock };
+    if (m_subscription_status_changed) {
+        throw std::runtime_error("subscriptions / unsunscriptions must be mutexed!");
+    }
     m_redis_subscriber->subscribe(p_channel);
     notify_event_subscription_change();
+
+    while (!m_subscription_status_changed)
+        ;
+    m_subscription_status_changed = false;
 }
 
 void RedisBrokerConnector::unsubscribe(const std::string& p_channel)
 {
+    std::lock_guard<std::mutex> guard { m_subscription_lock };
+    if (m_subscription_status_changed) {
+        throw std::runtime_error("subscriptions / unsunscriptions must be mutexed!");
+    }
     m_redis_subscriber->unsubscribe(p_channel);
     notify_event_subscription_change();
+
+    while (!m_subscription_status_changed)
+        ;
+    m_subscription_status_changed = false;
 }
 
 void RedisBrokerConnector::send_request(const std::string& p_queue, const std::string& p_message)
