@@ -7,6 +7,7 @@
 #include <oregano/ITransactionInterface.h>
 
 #include <chrono>
+#include <mutex>
 #include <thread>
 
 using namespace std::chrono_literals;
