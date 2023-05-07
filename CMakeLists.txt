@@ -21,7 +21,7 @@ add_compile_definitions(NOMINMAX)
 # --------------
 if(BUILD_COVERAGE)
     if(NOT BUILD_TEST)
-        message(FATAL_ERROR "To have coverage you must build with -DBUILD_TEST")
+        message(FATAL_ERROR "To have coverage you must build with tests!")
     endif()
 
     message(STATUS "Building coverage")
@@ -51,5 +51,12 @@ if(BUILD_TEST)
     message(STATUS "Building tests")
 
     enable_testing()
-    add_subdirectory(test)
+    add_subdirectory(test/unit)
+endif()
+
+if(BUILD_ITEST)
+    message(STATUS "Building tests")
+
+    enable_testing()
+    add_subdirectory(test/integration)
 endif()

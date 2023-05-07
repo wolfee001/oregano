@@ -1,3 +1,5 @@
+setup_conan(FILE conanfile.txt)
+
 add_executable(oregano_test
     BrokerConfigurationTest.cpp
     EventInterfaceTest.cpp
