@@ -23,14 +23,26 @@ jobs:
           version: 1.59.0
 
       - name: Configure CMake
+        if: matrix.os != 'ubuntu-latest'
         run: |
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DBUILD_TEST=1
+
+      - name: Configure CMake
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DBUILD_TEST=1 -DBUILD_ITEST=1
 
       - name: Build
         run: |
           cmake --build ${{github.workspace}}/build --config ${{ matrix.build-type }}
 
       - name: Test
+        if: matrix.os != 'ubuntu-latest'
+        run: |
+          ctest --output-on-failure --stop-on-failure --test-dir ${{github.workspace}}/build -C ${{ matrix.build-type }}
+
+      - name: Test
+        if: matrix.os == 'ubuntu-latest'
         run: |
           docker run -d redis
           ctest --output-on-failure --stop-on-failure --test-dir ${{github.workspace}}/build -C ${{ matrix.build-type }}
