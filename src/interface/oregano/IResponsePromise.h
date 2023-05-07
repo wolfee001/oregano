@@ -25,7 +25,7 @@ public:
         using std::runtime_error::runtime_error;
     };
 
-    using resolution_callback = std::function<void(const response_t& p_response)>;
+    using resolution_callback = std::function<void(response_t p_response)>;
 
     virtual ~IResponsePromise() = default;
 

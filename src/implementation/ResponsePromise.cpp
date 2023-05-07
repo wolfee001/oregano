@@ -41,7 +41,7 @@ void ResponsePromise::then(resolution_callback p_callback)
     if (m_then_applied) {
         throw IResponsePromise::ThenAlreadyAppliedException("Then callback already applied!");
     }
-    m_then_thread = std::thread([this, &p_callback]() {
+    m_then_thread = std::thread([this, p_callback]() {
         const auto resolution = await();
         p_callback(resolution);
     });
