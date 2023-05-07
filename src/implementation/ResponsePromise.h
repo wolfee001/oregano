@@ -2,6 +2,7 @@
 
 #include <oregano/IResponsePromise.h>
 
+#include <atomic>
 #include <mutex>
 #include <thread>
 
