@@ -9,8 +9,6 @@ namespace oregano {
 
 class MockIMessageBroker : public IMessageBroker {
 public:
-    MOCK_METHOD(void, init, (), (override));
-
     MOCK_METHOD(void, publish, (const std::string& p_channel, const std::string& p_message), (override));
     MOCK_METHOD(void, subscribe, (const std::string& p_channel), (override));
     MOCK_METHOD(void, unsubscribe, (const std::string& p_channel), (override));

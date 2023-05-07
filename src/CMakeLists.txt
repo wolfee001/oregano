@@ -3,11 +3,12 @@ setup_conan(FILE conanfile.txt)
 add_library(oregano
     implementation/BrokerConfiguration.cpp
     implementation/EventInterface.cpp
+    implementation/MessageBroker.cpp
     implementation/MessageBrokerFactory.cpp
     implementation/MessageBrokerWrapper.cpp
     implementation/MessageHandlerManager.cpp
     implementation/Publisher.cpp
-    implementation/RedisMessageBroker.cpp
+    implementation/RedisBrokerConnector.cpp
     implementation/ResponsePromise.cpp
     implementation/RequestHandler.cpp
     implementation/RequestSender.cpp
