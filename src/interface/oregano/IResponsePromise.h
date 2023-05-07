@@ -3,6 +3,7 @@
 #include <chrono>
 #include <functional>
 #include <optional>
+#include <stdexcept>
 #include <string>
 
 namespace oregano {
