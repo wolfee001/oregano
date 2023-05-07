@@ -153,6 +153,8 @@ TEST_F(PubSubTest, DistributedTest)
     publisher->publish("channel1", "message1");
     publisher->publish("channel2", "message2");
 
+    std::this_thread::sleep_for(100ms);
+
     subscriber1_sync.unlock();
     subscriber2_sync.unlock();
     subscriber3_sync.unlock();
