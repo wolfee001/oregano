@@ -7,6 +7,7 @@
 #include <nlohmann/json.hpp>
 
 #include <iostream>
+#include <mutex>
 #include <random>
 #include <thread>
 
