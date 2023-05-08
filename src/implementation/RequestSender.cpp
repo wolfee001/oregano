@@ -6,7 +6,13 @@
 
 #include <sole.hpp>
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4702)
+#endif
 #include <cppcodec/base64_rfc4648.hpp>
+#ifdef _MSC_VER
+#pragma warning(default : 4702)
+#endif
 
 using namespace std::chrono_literals;
 
@@ -35,7 +41,7 @@ std::unique_ptr<IResponsePromise> RequestSender::send_request(
     data["payload"] = cppcodec::base64_rfc4648::encode(p_message);
 
     auto promise = std::make_unique<ResponsePromise>(
-        [&id, &m_response_promise_unregister_callback = this->m_response_promise_unregister_callback]() {
+        [id, &m_response_promise_unregister_callback = this->m_response_promise_unregister_callback]() {
             m_response_promise_unregister_callback(id);
         },
         valid_until);

@@ -1,0 +1,5 @@
+---
+BasedOnStyle: WebKit
+ColumnLimit: "140"
+FixNamespaceComments: true
+AlwaysBreakTemplateDeclarations: Yes

@@ -2,23 +2,29 @@
 
 #include <nlohmann/json.hpp>
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4702)
+#endif
 #include <cppcodec/base64_rfc4648.hpp>
+#ifdef _MSC_VER
+#pragma warning(default : 4702)
+#endif
 
 namespace oregano {
 
-RequestHander::RequestHander(IMessageHandlerManager& p_message_handler_manager, IPublisher& p_publisher)
+RequestHandler::RequestHandler(IMessageHandlerManager& p_message_handler_manager, IPublisher& p_publisher)
     : m_message_handler_manager(p_message_handler_manager)
     , m_publisher(p_publisher)
 {
 }
 
-void RequestHander::listen(const std::string& p_channel) { m_message_handler_manager.add_message_handler(p_channel, *this); }
+void RequestHandler::listen(const std::string& p_channel) { m_message_handler_manager.add_message_handler(p_channel, *this); }
 
-void RequestHander::stop_listening(const std::string& p_channel) { m_message_handler_manager.remove_message_handler(p_channel, *this); }
+void RequestHandler::stop_listening(const std::string& p_channel) { m_message_handler_manager.remove_message_handler(p_channel, *this); }
 
-void RequestHander::set_on_request_callback(const on_request_callback& p_callback) { m_on_request_callback = p_callback; }
+void RequestHandler::set_on_request_callback(const on_request_callback& p_callback) { m_on_request_callback = p_callback; }
 
-void RequestHander::on_message(const std::string& p_channel, const std::string& p_message)
+void RequestHandler::on_message(const std::string& p_channel, const std::string& p_message)
 {
     const auto message = nlohmann::json::parse(p_message);
 

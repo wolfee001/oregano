@@ -1,0 +1,8 @@
+[requires]
+nlohmann_json/3.11.2
+sole/1.0.4
+
+[options]
+
+[generators]
+cmake

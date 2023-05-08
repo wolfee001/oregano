@@ -1,6 +1,12 @@
 #include "Publisher.h"
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4702)
+#endif
 #include <cppcodec/base64_rfc4648.hpp>
+#ifdef _MSC_VER
+#pragma warning(default : 4702)
+#endif
 
 #include <memory>
 

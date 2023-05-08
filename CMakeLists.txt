@@ -16,10 +16,12 @@ include(cmake/Conan.cmake)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+add_compile_definitions(NOMINMAX)
+
 # --------------
 if(BUILD_COVERAGE)
     if(NOT BUILD_TEST)
-        message(FATAL_ERROR "To have coverage you must build with -DBUILD_TEST")
+        message(FATAL_ERROR "To have coverage you must build with tests!")
     endif()
 
     message(STATUS "Building coverage")
@@ -28,6 +30,7 @@ if(BUILD_COVERAGE)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
 
     add_custom_target(coverage
+        COMMAND ${CMAKE_COMMAND} -E rm -rf coverage
         COMMAND ${CMAKE_COMMAND} -E make_directory coverage
         COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}
         COMMAND lcov --no-external --capture --initial --directory . --output-file coverage/lcov_base.info
@@ -35,10 +38,12 @@ if(BUILD_COVERAGE)
         COMMAND lcov --no-external --capture --directory . --output-file coverage/lcov.info
         COMMAND lcov --add-tracefile coverage/lcov_base.info --add-tracefile coverage/lcov.info --output-file coverage/lcov.info
         COMMAND lcov --remove coverage/lcov.info '/usr/*' '*/googletest/*' '${CMAKE_SOURCE_DIR}/test/*' --output-file coverage/lcov.info
-        COMMAND genhtml coverage/lcov.info -o coverage
+        COMMAND genhtml --demangle-cpp --no-function-coverage coverage/lcov.info -o coverage
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 endif()
+
+file(GLOB_RECURSE gcda_files ${CMAKE_BINARY_DIR}/*.gcda)
 
 add_subdirectory(src)
 
@@ -46,5 +51,18 @@ if(BUILD_TEST)
     message(STATUS "Building tests")
 
     enable_testing()
-    add_subdirectory(test)
+    add_subdirectory(test/unit)
+endif()
+
+if(BUILD_ITEST)
+    message(STATUS "Building tests")
+
+    enable_testing()
+    add_subdirectory(test/integration)
+endif()
+
+if(BUILD_EXAMPLES)
+    message(STATUS "Building examples")
+
+    add_subdirectory(examples)
 endif()

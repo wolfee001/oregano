@@ -13,7 +13,7 @@ namespace oregano {
 
 class TransactionInterface : public ITransactionInterface {
 public:
-    explicit TransactionInterface(IMessageBrokerWrapper& p_message_broker,
+    explicit TransactionInterface(IMessageBrokerWrapper& p_message_broker_wrapper,
         std::unique_ptr<IMessageHandlerManager> p_message_handler_manager, std::unique_ptr<IEventInterface> p_event_interface);
     ~TransactionInterface() override;
 
@@ -21,7 +21,7 @@ public:
     std::unique_ptr<IRequestHandler> create_request_handler() override;
 
 private:
-    IMessageBrokerWrapper& m_message_broker;
+    IMessageBrokerWrapper& m_message_broker_wrapper;
     std::unique_ptr<IMessageHandlerManager> m_message_handler_manager;
     std::unique_ptr<IEventInterface> m_event_interface;
     std::string m_callback_register_id;

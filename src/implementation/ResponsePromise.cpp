@@ -18,24 +18,41 @@ ResponsePromise::~ResponsePromise()
     m_response_promise_unregister_callback();
 }
 
-std::pair<IResponsePromise::Resolution, std::string> ResponsePromise::await()
+IResponsePromise::response_t ResponsePromise::await()
 {
+    if (m_result_read) {
+        throw IResponsePromise::ResultAlreadyReadException("Result already read from the promise!");
+    }
+    if (m_then_applied) {
+        throw IResponsePromise::ThenAlreadyAppliedException("Then callback already applied!");
+    }
     if (m_timeout_mutex.try_lock_until(m_valid_until)) {
+        m_result_read = true;
         return { IResponsePromise::Resolution::Answer, m_response };
     }
-    return { IResponsePromise::Resolution::Timeout, {} };
+    m_result_read = true;
+    return { IResponsePromise::Resolution::Timeout, std::nullopt };
 }
 
 void ResponsePromise::then(resolution_callback p_callback)
 {
-    m_then_thread = std::thread([this, &p_callback]() {
+    if (m_result_read) {
+        throw IResponsePromise::ResultAlreadyReadException("Result already read from the promise!");
+    }
+    if (m_then_applied) {
+        throw IResponsePromise::ThenAlreadyAppliedException("Then callback already applied!");
+    }
+    m_then_thread = std::thread([this, p_callback]() {
         const auto resolution = await();
-        p_callback(resolution.first, resolution.second);
+        p_callback(resolution);
     });
 }
 
 void ResponsePromise::on_response(const std::string& p_message)
 {
+    if (std::chrono::system_clock::now() > m_valid_until) {
+        return;
+    }
     m_response = p_message;
     m_timeout_mutex.unlock();
 }
