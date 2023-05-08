@@ -7,6 +7,7 @@
 #include <nlohmann/json.hpp>
 
 #include <iostream>
+#include <mutex>
 #include <random>
 #include <thread>
 
@@ -40,14 +41,31 @@ int main()
         std::cout << "Sending request on channel " << channel << std::endl;
         std::cout << json.dump(2) << std::endl;
 
+        // Example with synchronous await
         auto response = request_sender->send_request(channel, json.dump(), 1s)->await();
         if (response.resolution == oregano::IResponsePromise::Resolution::Timeout) {
-            std::cout << "REQUEST MESSAGE TIMED OUT" << std::endl << std::endl;
+            std::cout << "REQUEST MESSAGE TIMED OUT" << std::endl;
             continue;
         }
 
         std::cout << "Response" << std::endl;
-        std::cout << nlohmann::json::parse(*(response.message)).dump(2) << std::endl << std::endl;
+        std::cout << nlohmann::json::parse(*(response.message)).dump(2) << std::endl;
+
+        // Example with then callback
+        std::mutex mtx;
+        mtx.lock();
+        request_sender->send_request(channel, json.dump(), 1s)->then([&mtx](oregano::IResponsePromise::response_t p_response) {
+            if (p_response.resolution == oregano::IResponsePromise::Resolution::Timeout) {
+                std::cout << "REQUEST MESSAGE TIMED OUT" << std::endl << std::endl;
+                mtx.unlock();
+                return;
+            }
+
+            std::cout << "Response" << std::endl;
+            std::cout << nlohmann::json::parse(*(p_response.message)).dump(2) << std::endl << std::endl;
+            mtx.unlock();
+        });
+        mtx.lock();
 
         std::this_thread::sleep_for(std::chrono::seconds(dist(rng)));
     }

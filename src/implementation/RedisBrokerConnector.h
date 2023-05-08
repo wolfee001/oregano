@@ -2,6 +2,8 @@
 
 #include "IMessageBrokerConnector.h"
 
+#include <oregano/BrokerConfiguration.h>
+
 #include <atomic>
 #include <list>
 #include <memory>
@@ -23,7 +25,7 @@ namespace oregano {
 
 class RedisBrokerConnector : public IMessageBrokerConnector {
 public:
-    RedisBrokerConnector(const std::string& p_host, uint16_t p_port, const std::string& p_technical_channel);
+    RedisBrokerConnector(std::unique_ptr<broker_configuration::Redis> p_configuration, const std::string& p_technical_channel);
     ~RedisBrokerConnector() override;
 
     void set_on_subscriber_callback(const callback_t& p_on_subscribe_callback) override;
@@ -42,8 +44,7 @@ private:
     void notify_queue_subscription_change();
 
 private:
-    std::string m_host;
-    uint16_t m_port { 0 };
+    std::unique_ptr<broker_configuration::Redis> m_configuration;
     std::string m_technical_channel;
     std::unique_ptr<sw::redis::Redis> m_redis;
     std::unique_ptr<sw::redis::Subscriber> m_redis_subscriber;

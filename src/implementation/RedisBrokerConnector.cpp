@@ -15,14 +15,16 @@ using namespace std::chrono_literals;
 
 namespace oregano {
 
-RedisBrokerConnector::RedisBrokerConnector(const std::string& p_host, uint16_t p_port, const std::string& p_technical_channel)
-    : m_host(p_host)
-    , m_port(p_port)
+RedisBrokerConnector::RedisBrokerConnector(
+    std::unique_ptr<broker_configuration::Redis> p_configuration, const std::string& p_technical_channel)
+    : m_configuration(std::move(p_configuration))
     , m_technical_channel(p_technical_channel)
 {
     sw::redis::ConnectionOptions opts;
-    opts.host = m_host;
-    opts.port = m_port;
+    opts.host = m_configuration->get_host();
+    opts.port = m_configuration->get_port();
+    opts.user = m_configuration->get_user();
+    opts.password = m_configuration->get_password();
 
     m_redis = std::make_unique<sw::redis::Redis>(opts);
     m_redis_queue = std::make_unique<sw::redis::Redis>(opts);
