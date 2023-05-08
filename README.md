@@ -10,7 +10,7 @@ Message broker based messaging library for event (pub/sub) and transaction (requ
 
 The event system implements a publisher - subscriber system. Any publisher can publish onto any channel and any subscriber can subscribe to any channel. An event published on a given channel will be received by all subscribers subscribed to the channel. The message itself can be any bytestream represented as `std::string`. In the internals the message will be transformed to `base64` string.
 
-```plantuml
+<!-- ```plantuml
 @startuml
 
 skinparam linetype polyline
@@ -84,7 +84,9 @@ channel_2 =[#blue]> ISubscriber3 : base64 message
 ISubscriber3 -> subscriber_logic3 : raw message
 
 @enduml
-```
+```-->
+
+![Pubsub](https://www.plantuml.com/plantuml/svg/dLKzRy8m4DtzAwnqPi2X7P2AM3gmLUg8KEIFAqGuJcGdLAZYlzVasyI44ZO_lxjtxpXVrYQdEYyIYP0vnYgZcYPOnWhoSmOuI-NvUa28fqcMAb0vDg1FCOU8OcfmK9ym3V0lmlQdWUTKxQKDBfYCpG5q9DDzpESblmLn2GQe3CeeFz8zuCt7oKfiL0xwctAeGcx0HiWLstmsYUkWzXoKx0kw-4mmnmHxQ88yRu9CCK56JCYq43W1OwnOn7Hwj7LSsJM4AwXHgEZyG9K26Sqz6AcmXe5dOdk8XG2rc_KutlPnftrys3vJCCDrpDmXwD3_D31yee5VRUPw33fWT0w4OqGyDa8c65bCCaAUCWAE4NXi99nWv7MIaN34IBTK-jFNljAEmBq4WRe_qdTl5zXW6yrMpj9OOar_ccU5-ZVlsnSDOhVgFP4bPjJ0swBbey6USDAJk-d9DJsJ1VJo4q_-JhijnndsGOHpQuiPlaItf0SAP5I1-1J8FGM2UwR7DNentf1mjApGLrPuMzOQbB0Vm3y0 "Pubsub")
 
 ### Transaction system
 
@@ -120,7 +122,7 @@ The `TransactionInterface`-unique `response_channel` ensures that only the reque
 
 The request must sent to a queue to ensure that only one consumer will receive the given request. This also acts a natural load balancer without an additional service, since the consumer will only try pick the next message when it's ready to process. If the given message broker does not support queues, the queue functionality must emulated with other facilities (like subscriber group in MQTT5).
 
-```plantuml
+<!-- ```plantuml
 @startuml
 
 skinparam linetype polyline
@@ -170,7 +172,9 @@ AttaCaccA_CACaGa =[#blue]> ISubscriber : base64 encoded\nresponse with\nheader
 ISubscriber =l[#blue]> producer_logic : raw response
 
 @enduml
-```
+``` -->
+
+![Transaction](https://www.plantuml.com/plantuml/svg/dLHDJyCm3BtdLrZZp849SK02CKq8TaF03T3a9cQhbYOb7o24-EzaxPerwHWVEtIAxVVyukVsmZeqpbUICRigLOq6Av2b8lTU4zHQlgyFZ75TrLgHSb0RBJmd0sXXr1r6yC4W_0nnXseXAPRDfLwKF2c69ZHY3Q96li85mUpUeBB8NQdLJ3aopyZfgC7jJ7KTqwwpMthnPDqTAK4c5iGcbw_X2Zbz6kmJP-Htlh3Sb4MF-PErp-OlxGw7uc5P2a7gwN3GcGK8bzeBgCZQe6rU6BtQJ7KJWZRK2GhKde1hPNqLvjeScqJBCt4EfyZvP3wTJF4AsrHIdIWQr7_sNUw0ZPxkq2dPwzdulvvTenBoPzF6VpJjnXUojCllFDjMnbbjDpPEeR-ncTvzDeytYDrpwWFJvciliXVexE70a7WwpvVi50o-XLiqCPOb8oZRWrCeqDB9CP3YMf1uL1i2U2lTyb4j2TUlJuOQIEWcy4kw73PKrrurlHBBiW5LI4zh6T7Q2B5XVIsnNcPRdY_yJjajGQfx0En9s7uIVatNnvp9I9NvdTs8NGH7msVw2m00 "Transaction")
 
 ## How to use
 
